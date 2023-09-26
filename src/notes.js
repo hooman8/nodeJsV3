@@ -22,7 +22,7 @@ export const findNotes = async (filter) => {
   );
 };
 
-export const updateNotes = async (id, note) => {
+export const updateNote = async (id, note) => {
   return await updateDB(id, note);
 };
 

@@ -4,6 +4,7 @@ import {
   newNote,
   getAllNotes,
   findNotes,
+  updateNote,
   removeNote,
   removeAllNotes,
 } from "./notes.js";
@@ -77,6 +78,39 @@ yargs(hideBin(process.argv))
     }
   )
   .command(
+    "update <id> <note> [tags]",
+    "update a note by id",
+    (yargs) => {
+      return yargs
+        .positional("id", {
+          type: "string",
+          description: "The id of the note you want to update",
+        })
+        .positional("note", {
+          type: "string",
+          description: "The new note content",
+        })
+        .positional("tags", {
+          type: "string",
+          description: "The new tags for the note, comma-separated (optional)",
+          default: "",
+        });
+    },
+    async (argv) => {
+      const tagsArray = argv.tags ? argv.tags.split(",") : [];
+      const updatedNote = await updateNote(argv.id, {
+        id: argv.id,
+        content: argv.note,
+        tags: tagsArray,
+      });
+      console.log(
+        `Note ${updatedNote.id} updated with new content ${
+          updatedNote.content
+        }${argv.tags ? " and tags" : ""}`
+      );
+    }
+  )
+  .command(
     "web [port]",
     "launch website to see notes",
     (yargs) => {
@@ -92,7 +126,10 @@ yargs(hideBin(process.argv))
     "clean",
     "remove all notes",
     () => {},
-    async (argv) => {}
+    async (argv) => {
+      await removeAllNotes();
+      console.log("All notes removed");
+    }
   )
   .demandCommand(1)
   .parse();
